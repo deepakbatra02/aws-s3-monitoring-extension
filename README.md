@@ -30,8 +30,8 @@ Installation
 
 In the S3Configurations.yml, there are a few things that can be configured:
 
-*accesskey: Access key of Amazon S3 account
-*secretkey: Secret key of Amazon S3 account
-sizeunit (Default- KB): Unit to use for S3 objects size
-timeunit (Default- Seconds): Unit to use for SinceLastModified
-buckets (Default- All): Buckets to consider for getting all statistics
+*accesskey: Access key of Amazon S3 account;
+*secretkey: Secret key of Amazon S3 account;
+sizeunit (Default- KB): Unit to use for S3 objects size;
+timeunit (Default- Seconds): Unit to use for SinceLastModified;
+buckets (Default- All): Buckets to consider for getting all statistics;
