@@ -1,0 +1,24 @@
+<monitor>
+    <name>AWSS3Monitor</name>
+    <type>managed</type>
+    <description>AWS S3 monitor</description>
+    <monitor-configuration></monitor-configuration>
+    <monitor-run-task>
+        <execution-style>periodic</execution-style>
+        <execution-frequency-in-seconds>60</execution-frequency-in-seconds>
+        <name>AWSS3 Monitor Run Task</name>
+        <display-name>AWSS3 Monitor Task</display-name>
+        <description>AWSS3 Monitor Task</description>
+        <type>java</type>
+        <execution-timeout-in-secs>60</execution-timeout-in-secs>
+        <task-arguments>
+         	<argument name="configuration" is-required="true" default-value="monitors/S3Monitor/S3Configurations.yml"/>
+        	<argument name="metric-prefix" is-required="true" default-value="Custom Metrics|Amazon S3"/>
+        </task-arguments>
+            
+        <java-task>
+            <classpath>aws-s3-monitoring-extension.jar</classpath>
+            <impl-class>com.appdynamics.monitors.s3.AWSS3Monitor</impl-class>
+        </java-task>
+    </monitor-run-task>
+</monitor>

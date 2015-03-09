@@ -1,0 +1,19 @@
+# All S3 configurations 
+configuration:
+    # AWS credential configurations
+    awscredentials:
+        # Access key
+        accesskey: AKIAIKBYNWCOPXPHPUIA
+        # Secret key
+        secretkey: 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
+
+    # unit for size- B, KB (Default), MB, GB
+    sizeunit: MB        
+
+    # timeunit for SinceLastModified- seconds (Default), minutes, hours, days
+    timeunit: minutes
+
+    # Bucket names <Bucket Names>, all (Default)
+    buckets: !!set
+        ? corpsite-blog-alt
+        ? corpsite-blog-dev
