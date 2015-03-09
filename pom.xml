@@ -1,59 +1,48 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.appdynamics.extensions.cloudwatch</groupId>
-    <artifactId>aws-cloudwatch-monitoring-extension</artifactId>
-    <version>1.0.6</version>
+    <groupId>com.appdynamics.extensions.s3</groupId>
+    <artifactId>aws-s3-monitoring-extension</artifactId>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>aws-cloudwatch-monitoring-extension</name>
+    <name>aws-s3-monitoring-extension</name>
     <url>http://maven.apache.org</url>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     </properties>
+    
     <dependencies>
+        <dependency>
+            <groupId>com.appdynamics</groupId>
+            <artifactId>appd-exts-commons</artifactId>
+            <version>1.1.3</version>
+        </dependency>
         <dependency>
             <groupId>com.appdynamics</groupId>
             <artifactId>machine-agent</artifactId>
             <version>3.7.11</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk</artifactId>
-            <version>1.6.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.2.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.appdynamics</groupId>
-            <artifactId>appd-exts-commons</artifactId>
-            <version>1.0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.3</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>1.4.7</version>
-            <scope>test</scope>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
         </dependency>
         <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>1.4.7</version>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20140107</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -62,46 +51,60 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+			<groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>1.6.8</version>
+		</dependency>
     </dependencies>
     <build>
-        <finalName>CloudWatchMonitor</finalName>
+        <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
             </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<excludes>
-						<exclude>**/*ITest.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.8</version>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>copy-dependencies</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>copy-dependencies</goal>
+                            <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/CloudWatchMonitor/lib</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>false</overWriteSnapshots>
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                            <includeScope>runtime</includeScope>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Implementation-Title>S3 Monitor v${project.version} Build Date
+                                            ${maven.build.timestamp}
+                                        </Implementation-Title>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
                         </configuration>
                     </execution>
                 </executions>
@@ -113,8 +116,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Implementation-Title>
-                                CloudWatchMonitor v${project.version} Build Date ${maven.build.timestamp}
+                            <Implementation-Title>S3Monitor v${project.version} Build Date ${maven.build.timestamp}
                             </Implementation-Title>
                         </manifestEntries>
                     </archive>
@@ -130,23 +132,18 @@
                         <phase>install</phase>
                         <configuration>
                             <target>
-                                <property name="target.dir" value="${project.build.directory}/CloudWatchMonitor"/>
+                                <property name="target.dir" value="${project.build.directory}/S3Monitor"/>
                                 <mkdir dir="${target.dir}"/>
                                 <copy todir="${target.dir}">
                                     <fileset dir="src/main/resources/conf" includes="monitor.xml"/>
-                                </copy>
-                                <property name="conf.dir" value="${target.dir}/conf"/>
-                                <mkdir dir="${conf.dir}"/>
-                                <copy todir="${conf.dir}">
-                                    <fileset dir="src/main/resources/conf" includes="AWSConfigurations.xml"/>
-                                    <fileset dir="src/main/resources/conf" includes="remoteHelper.sh"/>
+                                    <fileset dir="src/main/resources/conf" includes="S3Configurations.yml"/>
                                 </copy>
                                 <copy todir="${target.dir}">
                                     <fileset dir="${project.build.directory}"
-                                             includes="${project.build.finalName}.${project.packaging}"/>
+                                             includes="${project.artifactId}.${project.packaging}"/>
                                 </copy>
-                                <zip destfile="${target.dir}-${project.version}.zip">
-                                    <zipfileset dir="${target.dir}" filemode="755" prefix="CloudWatchMonitor/"/>
+                                <zip destfile="${target.dir}.zip">
+                                    <zipfileset dir="${target.dir}" filemode="755" prefix="S3Monitor"/>
                                 </zip>
                                 <delete dir="${target.dir}"/>
                             </target>
@@ -184,6 +181,6 @@
         </repository>
     </repositories>
     <scm>
-        <connection>scm:git:https://github.com/Appdynamics/aws-cloudwatch-monitoring-extension.git</connection>
+        <connection>scm:git:https://github.com/Appdynamics/aws-s3-monitoring-extension.git</connection>
     </scm>
 </project>
