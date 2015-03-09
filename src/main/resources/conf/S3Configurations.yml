@@ -3,9 +3,9 @@ configuration:
     # AWS credential configurations
     awscredentials:
         # Access key
-        accesskey: AKIAIKBYNWCOPXPHPUIA
+        accesskey: Access-key
         # Secret key
-        secretkey: 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
+        secretkey: Secret-key
 
     # unit for size- B, KB (Default), MB, GB
     sizeunit: KB        
