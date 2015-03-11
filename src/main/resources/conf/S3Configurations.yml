@@ -1,19 +1,19 @@
-# All S3 configurations 
+# All S3 configurations. Must set Access-key and Secret-key
 configuration:
     # AWS credential configurations
     awscredentials:
         # Access key
-        accesskey: Access-key
+        accesskey: <Access-key>
         # Secret key
-        secretkey: Secret-key
+        secretkey: <Secret-key>
 
-    # unit for size- B, KB (Default), MB, GB
+    # sizeunit (optional): is unit for size- B, KB (Default), MB, GB
     sizeunit: KB        
 
-    # timeunit for SinceLastModified- seconds (Default), minutes, hours, days
+    # timeunit (optional): is unit for SinceLastModified- seconds (Default), minutes, hours, days
     timeunit: seconds
 
-    # Bucket names <Bucket Names>, all (Default)
+    # buckets (optional): Bucket names to monitor- all (Default);
     buckets: !!set
-        ? corpsite-blog-alt
-        ? corpsite-blog-dev
+        ? <bucket-name1>
+        ? <bucket-name2>
