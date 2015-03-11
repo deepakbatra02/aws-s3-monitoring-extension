@@ -128,17 +128,39 @@ public class AWSS3Monitor extends AManagedMonitor {
 			for (Bucket bucket : buckets) {
 				// Getting required objects details for the current bucket
 
-				ObjectListing objectListing = amazonS3Client.listObjects(bucket
-						.getName());
-				count += objectListing.getObjectSummaries().size();
-				for (S3ObjectSummary s3ObjectSummary : objectListing
-						.getObjectSummaries()) {
-					size += s3ObjectSummary.getSize();
+				ObjectListing objectListing = null;
 
-					if (lastModified.before(s3ObjectSummary.getLastModified())) {
-						lastModified = s3ObjectSummary.getLastModified();
+				do {
+					// Getting objectListing while calling it for the first time
+					if (objectListing == null) {
+						objectListing = amazonS3Client.listObjects(bucket
+								.getName());
+					} else {
+						// Calling listNextBatchOfObjects if previous response
+						// is truncated
+						objectListing = amazonS3Client
+								.listNextBatchOfObjects(objectListing);
+					}
+
+					// Incrementing the count
+					count += objectListing.getObjectSummaries().size();
+
+					// Looping over all objects
+					for (S3ObjectSummary s3ObjectSummary : objectListing
+							.getObjectSummaries()) {
+						// Incrementing size
+						size += s3ObjectSummary.getSize();
+
+						// Setting last modified if lastModifiedDate is latest
+						if (lastModified.before(s3ObjectSummary
+								.getLastModified())) {
+							lastModified = s3ObjectSummary.getLastModified();
+						}
 					}
 				}
+
+				// Continuing till objectListing is complete
+				while (objectListing.isTruncated());
 			}
 
 		} catch (AmazonS3Exception exception) {

@@ -44,6 +44,6 @@ public class AWSS3Constants {
 	public static final String TIMEUNIT_DAYS = "Days";
 
 	public static final String RESULT_KEY_SIZE = "Size";
-	public static final String RESULT_KEY_SINCELASTMODIFIED = "SinceLastModified";
-	public static final String RESULT_KEY_COUNT = "Count";
+	public static final String RESULT_KEY_SINCELASTMODIFIED = "Since Last Modified";
+	public static final String RESULT_KEY_COUNT = "Objects Count";
 }
