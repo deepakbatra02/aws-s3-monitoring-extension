@@ -7,7 +7,7 @@ configuration:
         # Secret key
         secretkey: <Secret-key>
 
-    # sizeunit (optional): is unit for size- B, KB (Default), MB, GB
+    # sizeunit (optional): is unit for size- B, KB (Default), MB
     sizeunit: KB        
 
     # timeunit (optional): is unit for SinceLastModified- seconds (Default), minutes, hours, days

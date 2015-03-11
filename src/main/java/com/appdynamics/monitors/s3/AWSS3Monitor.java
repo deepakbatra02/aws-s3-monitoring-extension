@@ -121,23 +121,27 @@ public class AWSS3Monitor extends AManagedMonitor {
 		try {
 			// Fetching all bucket names and adding that in list
 			if (isAllBuckets) {
+				logger.debug("Calling Webservice to list all buckets");
 				buckets = amazonS3Client.listBuckets();
 			}
 
 			// Looping over all buckets
 			for (Bucket bucket : buckets) {
-				// Getting required objects details for the current bucket
+
+				logger.debug("Getting data for bucket: " + bucket.getName());
 
 				ObjectListing objectListing = null;
 
 				do {
 					// Getting objectListing while calling it for the first time
 					if (objectListing == null) {
+						logger.debug("Calling Webservice to get objectlisting for first time");
 						objectListing = amazonS3Client.listObjects(bucket
 								.getName());
 					} else {
 						// Calling listNextBatchOfObjects if previous response
 						// is truncated
+						logger.debug("Calling Webservice to get objectlisting subsequent time");
 						objectListing = amazonS3Client
 								.listNextBatchOfObjects(objectListing);
 					}
@@ -168,6 +172,8 @@ public class AWSS3Monitor extends AManagedMonitor {
 			throw new TaskExecutionException(
 					"Sending S3 metric failed due to AmazonS3Exception");
 		}
+
+		logger.debug("Creating result map that will be sent to controller.");
 
 		Map<String, String> resultMap = new HashMap<String, String>();
 

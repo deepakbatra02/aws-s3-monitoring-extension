@@ -87,9 +87,6 @@ public class ConfigurationUtil {
 				Set<String> bucketNames = (Set<String>) config
 						.get(AWSS3Constants.KEY_BUCKETS);
 				awsConfiguration.setBucketNames(bucketNames);
-			} else {
-				// Setting default value (KB) for sizeunit
-				awsConfiguration.setSizeUnit(AWSS3Constants.SIZE_KB);
 			}
 
 			if (config.containsKey(AWSS3Constants.KEY_SIZEUNIT)
