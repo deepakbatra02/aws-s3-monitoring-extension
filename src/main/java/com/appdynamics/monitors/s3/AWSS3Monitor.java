@@ -89,38 +89,73 @@ public class AWSS3Monitor extends AManagedMonitor {
 				+ ", Secret key:"
 				+ configuration.getAwsCredentials().getAWSSecretKey());
 
+		// Creating AmazonS3Client
 		AmazonS3Client amazonS3Client = new AmazonS3Client(
 				configuration.getAwsCredentials());
 
+		// Getting list of buckets from configuration, for which result needs to
+		// be collected
+		List<Bucket> buckets = getBuckets();
+
+		// Calling getS3Result which calls Amazon WS to get the Result
+		Map<String, String> resultMap = getS3Result(buckets, amazonS3Client);
+
+		// Sending all metrics to controller
+		printAllMetrics(argsMap.get(AWSS3Constants.KEY_METRICPREFIX), resultMap);
+
+		logger.info("Sending S3 metric complete!");
+		return new TaskOutput("Sending S3 metric complete!");
+	}
+
+	/**
+	 * Purpose: This method reads bucket names for configuration. It returns
+	 * null if no bucket is configured or "All" is configured in bucket list
+	 * 
+	 * @return List<Bucket> or Null
+	 */
+	private List<Bucket> getBuckets() {
 		List<Bucket> buckets = new ArrayList<Bucket>();
-		boolean isAllBuckets = false;
 
 		if (configuration.getBucketNames() != null
 				&& configuration.getBucketNames().size() != 0) {
 			// Adding bucket names mentioned in configuration
 			for (String bucketName : configuration.getBucketNames()) {
 				if (bucketName.equalsIgnoreCase(AWSS3Constants.BUCKETS_ALL)) {
-					// Setting isAllBuckets to true if All is specified
-					isAllBuckets = true;
-					buckets.clear();
+					// Setting buckets to null as data needs to be fetched for
+					// all buckets
+					buckets = null;
 					break;
 				} else {
 					buckets.add(new Bucket(bucketName));
 				}
 			}
 		} else {
-			// Setting isAllBuckets to true if buckets is not in configuration
-			isAllBuckets = true;
+			// Setting buckets to null as data needs to be fetched for
+			// all buckets
+			buckets = null;
 		}
+		return buckets;
+	}
 
+	/**
+	 * This method calls Amazon WS to get required S3 statistics, set values
+	 * based on configured unit, and returns the result back
+	 * 
+	 * @param buckets
+	 * @param amazonS3Client
+	 * @return Map<String, String>
+	 * @throws TaskExecutionException
+	 */
+	private Map<String, String> getS3Result(List<Bucket> buckets,
+			AmazonS3Client amazonS3Client) throws TaskExecutionException {
 		// Declaring result variables with default values
 		long size = 0;
 		long count = 0;
 		Date lastModified = new Date(0);
 
 		try {
-			// Fetching all bucket names and adding that in list
-			if (isAllBuckets) {
+			// Fetching all bucket names if passed buckets is null
+			if (buckets == null) {
 				logger.debug("Calling Webservice to list all buckets");
 				buckets = amazonS3Client.listBuckets();
 			}
@@ -173,6 +208,20 @@ public class AWSS3Monitor extends AManagedMonitor {
 					"Sending S3 metric failed due to AmazonS3Exception");
 		}
 
+		return getResultWithRequiredUnit(size, count, lastModified);
+	}
+
+	/**
+	 * Purpose: This method calculates the result values based on required unit
+	 * defined in configuration
+	 * 
+	 * @param size
+	 * @param count
+	 * @param lastModified
+	 * @return Map<String, String>
+	 */
+	private Map<String, String> getResultWithRequiredUnit(long size,
+			long count, Date lastModified) {
 		logger.debug("Creating result map that will be sent to controller.");
 
 		Map<String, String> resultMap = new HashMap<String, String>();
@@ -194,7 +243,8 @@ public class AWSS3Monitor extends AManagedMonitor {
 
 		// Setting sinceLastModified in metrics based on the timeUnit configured
 		// in configurations
-		// Calculating SinceLastModified in seconds
+
+		// Calculating SinceLastModified in seconds (Default)
 		long sinceLastModified = (new Date().getTime() - lastModified.getTime()) / 1000;
 
 		// Calculating SinceLastModified based on timeunit defined in
@@ -212,14 +262,12 @@ public class AWSS3Monitor extends AManagedMonitor {
 
 		resultMap.put(AWSS3Constants.RESULT_KEY_SINCELASTMODIFIED,
 				String.valueOf(sinceLastModified));
-
-		printAllMetrics(argsMap.get(AWSS3Constants.KEY_METRICPREFIX), resultMap);
-
-		logger.info("Sending S3 metric complete!");
-		return new TaskOutput("Sending S3 metric complete!");
+		return resultMap;
 	}
 
 	/**
+	 * This method publishes all values to controller
+	 * 
 	 * @param metricPrefix
 	 * @param resultMap
 	 */
