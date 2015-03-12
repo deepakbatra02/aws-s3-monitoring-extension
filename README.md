@@ -1,37 +1,39 @@
-AppDynamics S3 Monitoring Extension
-===============================================
+Amazon AWS S3 - Monitoring Extension
+====================================
 
+
+Use case:
+---------
+
+The Amazon AWS S3 custom monitor captures statistics for Amazon S3 and displays them in the AppDynamics Metric Browser.
+ 
 This extension works only with the standalone machine agent.
 
-Use Case
--------- 
-
-The AWS S3 custom monitor captures statistics from Amazon S3 and displays them in the AppDynamics Metric Browser.
-Metrics include:
-* Count
-* SinceLastModified
-* Size
-
-Installation
-------------
-
- 1. Clone aws-s3-monitoring-extension from GitHub https://github.com/Appdynamics
- 2. Run 'mvn clean install' from the cloned aws-s3-monitoring-extension directory.
- 3. Download the S3Monitor.zip found in the 'target' directory into <machineagent install dir>/monitors/
- 4. Unzip the downloaded zip file.
- 5. In the newly created "S3Monitor" directory, edit the "S3Configurations.yml" file and configure required parameters
- 6. Restart the machine agent.
- 7. In the AppDynamics Metric Browser, look for: Application Infrastructure Performance | Amazon S3
  
- 
- 
- Configuration
+Installation:
 -------------
 
-In the S3Configurations.yml, there are a few things that can be configured:
+Download and Unzip the file S3Monitor.zip into <machineagent install dir>/monitors/
+Open S3Configurations.yml and monitor.xml and configure the arguments
+Restart the machineagent
+In the AppDynamics Metric Browser, look for: Application Infrastructure Performance | Tier-Name | Custom Metrics | Amazon S3.
+ 
+ 
+Configurations ( * -> Required ):
+---------------------------------
 
-*accesskey: Access key of Amazon S3 account;
-*secretkey: Secret key of Amazon S3 account;
-sizeunit (Default- KB): Unit to use for S3 objects size;
-timeunit (Default- Seconds): Unit to use for SinceLastModified;
-buckets (Default- All): Buckets to consider for getting all statistics;
+1. *accesskey:	Access-Key for S3 account
+2. *secretkey: Secret-Key for S3 account
+3. sizeunit: B, KB (Default), MB
+4. timeunit: Seconds (Default), Minutes, Hours, Days
+5. buckets: Bucket names that you want to monitor. If you want to monitor all available buckets remove this field or Add a bucket named "All".
+ 
+ 
+Amazon S3 Metrics:
+------------------
+
+1. Size:	Size of all the objects present in bucket(s) configured in S3Configurations.yml. Unit of this metric can also be configured in S3Configurations.yml file.
+2. Objects Count:	Number of objects present in bucket(s) configured in S3Configurations.yml.
+3. Since Last Modified:	Time since latest modification of any object in bucket(s) configured in S3Configurations.yml. Unit of this metric can also be configured in S3Configurations.yml file.
+
+ 
